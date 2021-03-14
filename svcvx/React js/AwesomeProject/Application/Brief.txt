@@ -1,0 +1,12 @@
+Application Breif
+
+Color codes:
+Base dark Blue:    0b1e3a
+Button Light Blue: 55acee
+Dark Grey Text:    23282e
+
+
+Fonts:
+Roboto Light
+SF Old Republic Bold
+

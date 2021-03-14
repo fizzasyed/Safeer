@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "parent"
+		},
+		{
+			"path": "confusion"
+		},
+		{
+			"path": "..\\python backend setup\\erp-backend"
+		}
+	],
+	"settings": {}
+}
