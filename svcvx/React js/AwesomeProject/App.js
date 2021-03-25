@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, FlatList, TextInput, Button, TouchableOpacity } from 'react-native';
 import StartStack from './src/pages/outerStack';
 import Help from './src/pages/help'
+import Newmapscreen from './src/pages/newmapscreen';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <StartStack />
+      <Newmapscreen />
       {/* <Help /> */}
     </View>
   )

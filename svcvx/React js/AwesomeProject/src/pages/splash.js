@@ -15,7 +15,8 @@ export default function Splash({navigation}) {
                 // Will change fadeAnim value to 1 in 5 seconds
                 Animated.timing(fadeAnim, {
                   toValue: 1,
-                  duration: 3000
+                  duration: 3000,
+                  useNativeDriver: true,
                 }).start();
                         }, [])
         
@@ -25,7 +26,8 @@ export default function Splash({navigation}) {
             // Will change fadeAnim value to 0 in 5 seconds
             Animated.timing(fadeAnim, {
               toValue: 0,
-              duration: 3000
+              duration: 3000,
+              useNativeDriver: true,
             }).start();
             navigation.navigate('Login')
           };

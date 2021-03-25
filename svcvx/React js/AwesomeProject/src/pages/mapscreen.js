@@ -1,25 +1,84 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, Dimensions, TextInput, Button, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { StyleSheet, Text, View, FlatList, Dimensions, TextInput, Button, TouchableOpacity, Alert } from 'react-native';
 import Header from '../components/header';
 import Footer from '../components/footerdriver';
 const Width = Dimensions.get('window').width;
 const Height = Dimensions.get('window').height;
-import MapView from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
+import Geolocation from "react-native-geolocation-service";
+import MapViewDirections from 'react-native-maps-directions';
+
 
 export default function Mapscreen({ navigation }) {
-  const [initialPosition,setPosition]=useState('')
+
+  const handleButtonPress = () => {
+    console.log('sdssdsd');
+    // LocalNotification();
+  }
+  const [latitude, setLat] = useState(0)
+  const [longitude, setLon] = useState(0)
+  const [coordinates, setCoord] = useState([])
+  useEffect(() => {
+  });
+
+  const [initialPosition, setPosition] = useState({
+    latitude: latitude,
+    longitude: longitude,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  })
+  Geolocation.getCurrentPosition(
+    position => {
+      setLon(position.coords.longitude);
+      setLat(position.coords.latitude)
+      setPosition({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      })
+      setCoord(coordinates.concat({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      }))
+    },
+    error => {
+      Alert.alert(error.message.toString());
+    },
+    {
+      showLocationDialog: true,
+      enableHighAccuracy: true,
+      timeout: 20000,
+      maximumAge: 2000
+    }
+
+
+  );
+
   return (
     <View style={styles.container}>
       <Text>{initialPosition.latitude}</Text>
+      {/* <Button title="NEW" onP */}
+      {/* // ress={handleButtonPress}></Button> */}
+      {/* <TouchableOpacity onPress={handleButtonPress} style={{width:200,height:200,backgroundColor:'green'}}><Text>adfsdfsfsdf</Text></TouchableOpacity> */}
+
       <Header navigation={navigation} />
       <MapView style={styles.map}
-        initialRegion={{
-         latitude: 37.78825,
-         longitude: -122.4324,
-         latitudeDelta: 0.0922,
-         longitudeDelta: 0.0421,
-       }}
-      />
+        // ref={mapRef}
+        // focusable={false}
+        region={initialPosition}
+        onRegionChange={() => { }}
+        initialRegion={initialPosition}
+      >
+        <Marker
+          coordinate={{
+            latitude: latitude,
+            longitude: longitude,
+          }}>
+        </Marker>
+        {/* const destination = {latitude: 37.771707, longitude: -122.4053769}; */}
+        
+    </MapView>
       <Footer />
     </View>
   )
@@ -30,7 +89,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0)',
   },
   map: {
-    flex: 1
+    width: Width,
+    height: Height,
   },
   container2: {
     flex: 1,

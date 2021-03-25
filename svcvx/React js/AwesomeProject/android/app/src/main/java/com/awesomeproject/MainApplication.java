@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
 import com.reactnativecommunity.geolocation.GeolocationPackage;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
@@ -39,7 +40,8 @@ public class MainApplication extends Application implements ReactApplication {
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
           return Arrays.<ReactPackage>asList(
-              new MainReactPackage(),
+            new MainReactPackage(),
+            new RNFusedLocationPackage(),
             new GeolocationPackage(),
             new SafeAreaContextPackage(),
             new ReanimatedPackage(),
