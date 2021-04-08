@@ -3,12 +3,14 @@ import { StyleSheet, Text, View, FlatList, TextInput, Button, TouchableOpacity }
 import StartStack from './src/pages/outerStack';
 import Help from './src/pages/help'
 import Newmapscreen from './src/pages/newmapscreen';
-
+import Test from './src/pages/testing';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Newmapscreen />
+      {/* <Newmapscreen /> */}
       {/* <Help /> */}
+      {/* {<StartStack/>} */}
+      {<Test/>}
     </View>
   )
 }

@@ -32,11 +32,9 @@ export default function Footernormal() {
           </View>
         </View>
         <View style={styles.row2}>
-          <Switch
-            value={isSwitchEnabled}
-            onValueChange={(value) => setSwitch(value)}
-            marginLeft='7%'
-          />
+        <TouchableOpacity
+            style={styles.button2}
+          ><Text style={{ fontWeight: 'bold', fontSize: 15, color: '#23282e' }}>Start Ride</Text></TouchableOpacity>
           <TouchableOpacity
             style={styles.button2}
           ><Text style={{ fontWeight: 'bold', fontSize: 15, color: '#23282e' }}>Emergency</Text></TouchableOpacity>
@@ -125,7 +123,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    marginLeft: '15%'
+    marginLeft: '10%'
   },
   containerrow3: {
     alignItems: 'center',
