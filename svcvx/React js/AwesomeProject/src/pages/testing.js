@@ -146,6 +146,9 @@ export default function Mapscreen({ navigation }) {
           ><Text style={{ fontWeight: 'bold', fontSize: 15, color: '#23282e' }}>Next Stop</Text></TouchableOpacity>
         }
               </View>
+
+
+              
             
            
 
