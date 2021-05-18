@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.rnfs.RNFSPackage;
+import io.invertase.firebase.RNFirebasePackage;
 import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
 import com.reactnativecommunity.geolocation.GeolocationPackage;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
@@ -19,7 +21,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.facebook.react.shell.MainReactPackage;
 import java.util.Arrays;
-
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
+import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 public class MainApplication extends Application implements ReactApplication {
 
 
@@ -41,11 +44,15 @@ public class MainApplication extends Application implements ReactApplication {
           // packages.add(new MyReactNativePackage());
           return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
+            new RNFSPackage(),
+            new RNFirebasePackage(),
             new RNFusedLocationPackage(),
             new GeolocationPackage(),
             new SafeAreaContextPackage(),
             new ReanimatedPackage(),
             new RNGestureHandlerPackage(),
+            new RNFirebaseMessagingPackage(),
+            new RNFirebaseNotificationsPackage(),
               // new MapsPackage(),
               //] new MapsPackage(),
               new MapsPackage()

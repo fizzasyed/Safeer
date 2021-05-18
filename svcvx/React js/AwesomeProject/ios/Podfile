@@ -20,6 +20,10 @@ target 'AwesomeProject' do
 
   pod 'react-native-geolocation-service', :path => '../node_modules/react-native-geolocation-service'
 
+  pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
+
+  pod 'RNFS', :path => '../node_modules/react-native-fs'
+
   target 'AwesomeProjectTests' do
     inherit! :complete
     # Pods for testing

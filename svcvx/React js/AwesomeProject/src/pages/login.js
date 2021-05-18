@@ -2,13 +2,52 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, FlatList,Dimensions, TextInput,Button,TouchableOpacity,ImageBackground ,Image,StatusBar} from 'react-native';
 const Width = Dimensions.get('window').width;
 const Height = Dimensions.get('window').height;
+import axios from 'axios';
+import Store from "react-native-fs-store";
 
 export default function Login({navigation}) {
-  const onpress=()=>{
-    navigation.navigate('Dri');
+  const Storage = new Store('default');
+
+  const[username,setusername]=useState('')
+  const[password,setpassword]=useState('')
+  const onpress=async()=>{
+    // console.log(props)
+    var array={
+      username:username,
+      password:password
+    }
+    axios.post(
+      'http://192.168.18.3:5000/parentlogin',
+      array,{withCredentials: true}
+    ).then(async (response)=> {
+      console.log(response.data);
+      await Storage.setItem('LoginCred', array);
+          // navigation.navigate('Dri');
+
+      
+    })
+      .catch((e) => {
+        console.log("NotWorking");
+      });
+
+
+ 
   }
-  const onpress2=()=>{
-    navigation.openDrawer();
+  const onpress2=async()=>{
+    // navigation.openDrawer();
+
+    var val=await Storage.getItem('LoginCred');
+    console.log(val)
+    axios.get(
+      'http://192.168.18.3:5000/check',
+      {withCredentials: true}
+    ).then(function (response) {
+      console.log(response.data[0]);
+     
+    })
+      .catch((e) => {
+        console.log("NotWorking");
+      });
 
   } 
   return (
@@ -31,6 +70,7 @@ export default function Login({navigation}) {
           <TextInput
             style={styles.textinput}
             placeholder='     Username'
+            onChangeText={(val)=>{setusername(val)}}
           />
           <Text style={styles.forget}>Forgot Username</Text>
         </View>
@@ -38,6 +78,7 @@ export default function Login({navigation}) {
           <TextInput
             style={styles.textinput}
             placeholder='     Password'
+            onChangeText={(val)=>{setpassword(val)}}
           />
           <Text style={styles.forget}>Forgot Password</Text>
         </View>
@@ -52,7 +93,7 @@ export default function Login({navigation}) {
         <View style={styles.addaccount}>
         <TouchableOpacity 
           style={styles.link}
-          onpress={onpress2}
+          onPress={onpress2}
           ><Text style={{ color:'#ffff'}}>Do you have an account? Register</Text></TouchableOpacity>       
         </View>
       </View>

@@ -110,7 +110,9 @@ export function DrawerContent(props) {
                     }
                     label="Log Out"
                     labelStyle={{ fontSize: 15, color: 'white' }}
-                    onPress={() => { props.navigation.navigate('Login') }}
+                    onPress={() => {
+                        
+                        props.navigation.navigate('Login') }}
                 />
             </Drawer.Section>
         </View>

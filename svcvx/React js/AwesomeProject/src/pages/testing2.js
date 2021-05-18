@@ -4,56 +4,54 @@ import Header from '../components/header';
 import Footer from '../components/footerdriver';
 const Width = Dimensions.get('window').width;
 const Height = Dimensions.get('window').height;
-import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker,Polyline } from "react-native-maps";
 import Geolocation from "react-native-geolocation-service";
 import MapViewDirections from 'react-native-maps-directions';
 
 
 export default function Mapscreen({ navigation }) {
   // var {height, width} = Dimensions.get('window');
-  const handleButtonPress = () => {
-    console.log("0552");
-    setCount(1);
-
-    Linking.openURL("https://www.google.com/maps/dir/?api=1&destination=24.8746,67.0398").then((val) => { console.log(val) });
-
-  }
-  const [desitinationCoordinate,setdestcoor]=useState([])
-  const handleButtonPress2 = () => {
-    console.log("0553");
-    fetch("http://192.168.18.3:5000/Getlatitude").then((valu)=>{
-     console.log(valu) 
-     valu.json().then((json)=>{console.log(json.data)
-      Linking.openURL("https://www.google.com/maps/dir/?api=1&destination="+String(json.data[0])+","+String(json.data[1]))
-      .then((val) => {
-         console.log(val)
-         });
-
-    })
-     
-    }).catch(()=>{
-
-    })
-  }
+  
   const [latitude, setLat] = useState(0)
-  const [count_val, setCount] = useState(0)
   const [longitude, setLon] = useState(0)
+  const[newlatitude,setnewlat]=useState(0)
+  const[newlongitude,setnewlon]=useState(0)
   const [coordinates, setCoord] = useState([])
   // const { width, height } = Dimensions.get('window');
   const GOOGLE_MAPS_APIKEY = 'AIzaSyCXHfUkhCtah937THC3I5jgeP3Z-_1ieSM';
-
-  const stops = {
-    latitude: 24.8746,
-    longitude: 67.0398
-  }
+  
   const params = { initial: initialPosition, destination: stops }
   const [initialPosition, setPosition] = useState({
-    latitude: latitude,
-    longitude: longitude,
+    latitude: 0,
+    longitude: 0,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  })
+  const [Stop, setStop] = useState({
+    latitude: newlatitude,
+    longitude: newlongitude,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   })
   useEffect(() => {
+    setInterval(() => {
+        console.log('Interval triggered');
+        fetch("http://192.168.18.3:3000/GetTransmiting")
+        .then((val)=>{val.json()
+        .then((val2)=>{
+            setStop(val2);
+            setCoord(coordinates.concat(val2))
+
+        })
+        .catch((e)=>{console.log(e)})})
+        .catch((e)=>{
+            console.log(e)
+        })
+
+        
+      }, 1000*30);
+    
+
     findCoordinates();
   }, []);
   const findCoordinates = () => {
@@ -86,9 +84,6 @@ export default function Mapscreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Header navigation={navigation} />
-      {/* <TouchableOpacity onPress={findCoordinates}>
-					<Text style={styles.welcome}>Find My Coords?</Text>
-				</TouchableOpacity> */}
       <View>
         <MapView style={styles.map}
           region={initialPosition}
@@ -100,28 +95,12 @@ export default function Mapscreen({ navigation }) {
               longitude: longitude,
             }}>
           </Marker>
-          <MapViewDirections
-            style={{ width: Width, height: Height }}
-            origin={initialPosition}
-            destination={stops}
-            apikey={GOOGLE_MAPS_APIKEY}
-            strokeWidth={3}
-            mode={"DRIVING"}
-            onStart={(params) => {
-              console.log(`Started routing between "${params.origin}" and "${params.destination}"`);
-            }}
-            onReady={result => {
-              console.log(`Distance: ${result.distance} km`)
-              console.log(`Duration: ${result.duration} min.`)
-            }}
-            onError={(errorMessage) => {
-              // console.log('GOT AN ERROR');
-            }}
-          />
+          <Polyline coordinates={STATE_VAR.routeCoordinates} strokeWidth={5} />        
+
           <Marker
             coordinate={{
-              latitude: stops.latitude,
-              longitude: stops.longitude,
+              latitude: newlatitude,
+              longitude: newlongitude,
             }}>
           </Marker>
         </MapView>

@@ -1,128 +1,112 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, FlatList, Linking, Dimensions, TextInput, Button, Image, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Linking, Dimensions, TextInput, Button, Image, TouchableOpacity, Alert,Animated } from 'react-native';
 import Header from '../components/header';
 import Footer from '../components/footerdriver';
 const Width = Dimensions.get('window').width;
 const Height = Dimensions.get('window').height;
-import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker,Polyline } from "react-native-maps";
 import Geolocation from "react-native-geolocation-service";
-import MapViewDirections from 'react-native-maps-directions';
-
+import haversine from 'haversine';
 
 export default function Mapscreen({ navigation }) {
-  // var {height, width} = Dimensions.get('window');
-  const handleButtonPress = () => {
-    console.log("0552");
-    setCount(1);
-
-    Linking.openURL("https://www.google.com/maps/dir/?api=1&destination=24.8746,67.0398").then((val) => { console.log(val) });
-
+  const handleapi=(one ,two)=>{
+    // fetch("http://192.168.18.3:3000/Transmitting?Datatotal="+one+","+two).then(()=>{return}).catch((e)=>{console.log(e)})
+    
   }
-  const [desitinationCoordinate,setdestcoor]=useState([])
-  const handleButtonPress2 = () => {
-    console.log("0553");
-    fetch("http://192.168.18.3:5000/Getlatitude").then((valu)=>{
-     console.log(valu) 
-     valu.json().then((json)=>{console.log(json.data)
-      Linking.openURL("https://www.google.com/maps/dir/?api=1&destination="+String(json.data[0])+","+String(json.data[1]))
-      .then((val) => {
-         console.log(val)
-         });
+  const [latitudee, setLat] = useState(24.917028)
+  const [longitudee, setLon] = useState(67.077268)
+  const [newCoordinate,setnewcod]=useState({latitude:0,longitude:0})
+  const [STATE_VAR,setStatvar]=useState({
+    latitude: 0,
+    longitude: 0,
+    routeCoordinates: [],
+    distanceTravelled: 0,
+    prevLatLng: {},
+    coordinate: {
+     latitude: latitudee,
+     longitude: longitudee
+    }
+  });
+  const GOOGLE_MAPS_APIKEY = 'AIzaSyCJMv4yWFKkUKaa6L464bOkCUp24Gtx5YE';
 
-    })
-     
-    }).catch(()=>{
-
-    })
-  }
-  const [latitude, setLat] = useState(0)
-  const [count_val, setCount] = useState(0)
-  const [longitude, setLon] = useState(0)
-  const [coordinates, setCoord] = useState([])
-  // const { width, height } = Dimensions.get('window');
-  const GOOGLE_MAPS_APIKEY = 'AIzaSyCXHfUkhCtah937THC3I5jgeP3Z-_1ieSM';
-
-  const stops = {
-    latitude: 24.8746,
-    longitude: 67.0398
-  }
-  const params = { initial: initialPosition, destination: stops }
-  const [initialPosition, setPosition] = useState({
-    latitude: latitude,
-    longitude: longitude,
+  const getMapRegion = () => ({
+    latitude: STATE_VAR.latitude,
+    longitude: STATE_VAR.longitude,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421
+  });
+   const [initialPosition, setPosition] = useState({
+    latitude: 0,
+    longitude: 0,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   })
+  const calcDistance = newLatLng => {
+    const { prevLatLng } = STATE_VAR;
+    return haversine(prevLatLng, newLatLng) || 0;
+  };
   useEffect(() => {
+    setInterval(() => {
+      console.log('Interval triggered');
+      
+    }, 1000*60);
     findCoordinates();
+    
   }, []);
   const findCoordinates = () => {
-    Geolocation.getCurrentPosition(
-      position => {
-        setLon(position.coords.longitude);
-        setLat(position.coords.latitude)
-        setPosition({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        })
-        setCoord(coordinates.concat({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
-        }))
-      },
-      error => {
-        Alert.alert(error.message.toString());
-      },
-      {
-        showLocationDialog: true,
-        enableHighAccuracy: true,
-        timeout: 20000,
-        maximumAge: 2000
-      }
+    Geolocation.watchPosition(
+        position => {
+          console.log("Asdsdsdsdsdds")
+            const { coordinate, routeCoordinates, distanceTravelled } =
+            STATE_VAR;
+            const { latitude, longitude } = position.coords;
+
+            setnewcod({latitude:latitude,longitude:longitude})
+            console.log(latitude)
+            console.log(latitude)
+               setStatvar({
+                latitude:latitude,
+                longitude:longitude,
+                routeCoordinates: routeCoordinates.concat([newCoordinate]),
+                distanceTravelled:
+                distanceTravelled + calcDistance(newCoordinate),
+                prevLatLng: newCoordinate,
+                coordinate:coordinate
+              });   
+              handleapi(latitude,longitude);
+              console.log(STATE_VAR.routeCoordinates)
+
+
+
+          },
+
+          error => console.log(error),
+     { enableHighAccuracy: true, timeout: 20000, maximumAge: 100 },
     );
+   
   }
   return (
     <View style={styles.container}>
       <Header navigation={navigation} />
-      {/* <TouchableOpacity onPress={findCoordinates}>
-					<Text style={styles.welcome}>Find My Coords?</Text>
-				</TouchableOpacity> */}
+      <Text style={styles.bottomBarContent}>
+      {parseFloat(STATE_VAR.distanceTravelled).toFixed(2)} km
+    </Text>
       <View>
-        <MapView style={styles.map}
-          region={initialPosition}
-          initialRegion={initialPosition}
-        >
+      <MapView
+            style={styles.map}
+            showUserLocation
+            followUserLocation
+            loadingEnabled
+            region={getMapRegion()}
+            >
+        <Polyline coordinates={STATE_VAR.routeCoordinates} strokeWidth={5} />        
+        {/* <Marker.Animated
+    
+    coordinate={STATE_VAR.coordinate}
+  /> */}
+          
           <Marker
-            coordinate={{
-              latitude: latitude,
-              longitude: longitude,
-            }}>
-          </Marker>
-          <MapViewDirections
-            style={{ width: Width, height: Height }}
-            origin={initialPosition}
-            destination={stops}
-            apikey={GOOGLE_MAPS_APIKEY}
-            strokeWidth={3}
-            mode={"DRIVING"}
-            onStart={(params) => {
-              console.log(`Started routing between "${params.origin}" and "${params.destination}"`);
-            }}
-            onReady={result => {
-              console.log(`Distance: ${result.distance} km`)
-              console.log(`Duration: ${result.duration} min.`)
-            }}
-            onError={(errorMessage) => {
-              // console.log('GOT AN ERROR');
-            }}
-          />
-          <Marker
-            coordinate={{
-              latitude: stops.latitude,
-              longitude: stops.longitude,
-            }}>
+            coordinate={newCoordinate}>
           </Marker>
         </MapView>
       </View>
@@ -152,18 +136,7 @@ export default function Mapscreen({ navigation }) {
             </View>
           </View>
           <View style={styles.row2}>
-            <View>
-            {count_val==0?               <TouchableOpacity
-                  style={styles.button2}
-                  onPress={() => { handleButtonPress() }}
-                ><Text style={{ fontWeight: 'bold', fontSize: 15, color: '#23282e' }}>Start Ride</Text></TouchableOpacity>
-            :<TouchableOpacity
-            style={styles.button2}
-            onPress={() => { handleButtonPress2() }}
-          ><Text style={{ fontWeight: 'bold', fontSize: 15, color: '#23282e' }}>Next Stop</Text></TouchableOpacity>
-        }
-              </View>
-
+            
 
               
             
